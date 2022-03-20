@@ -1,0 +1,42 @@
+﻿@model datamodel.vAccount
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<div>
+    <h4>Информация о пользователе</h4>
+</div>
+<ul>
+    <li>
+        Имя:@Model.FirstName
+    </li>
+    <li>
+        Фамилия:@Model.SecondName
+    </li>
+    <li>
+        Отчество:@Model.LastName
+    </li>
+    <li>
+        Телефон:@Model.Phone
+    </li>
+    <li>
+        Логин входа:@Model.Login
+    </li>
+    <li>
+        Дата регистрации:@Model.RegistrationDate
+    </li>
+</ul>
+
+<div>
+    <h4>Управление профилем</h4>
+</div>
+<button type="button" class="btn btn-secondary">Сменить логин или пароль</button>
+@Html.ActionLink("Изменить персональные данные", "Edit", new { id = Model.Id })
+@Html.ActionLink("Выход", "Logout")
+@if (Model.IsAdmin.Value == true)
+{
+    <div>
+        <h4>Управление другими профилями</h4>
+    </div>
+}
+
