@@ -37,6 +37,7 @@ namespace datamodel
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<vAccount> vAccounts { get; set; }
         public virtual DbSet<vStudent> vStudents { get; set; }
+        public virtual DbSet<vTeacher> vTeachers { get; set; }
     
         public virtual int EditUser(Nullable<int> id, string firstname, string lastname, string secondname, string login, string email, string phone)
         {
@@ -69,6 +70,33 @@ namespace datamodel
                 new ObjectParameter("Phone", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("EditUser", idParameter, firstnameParameter, lastnameParameter, secondnameParameter, loginParameter, emailParameter, phoneParameter);
+        }
+    
+        public virtual int DeleteAccount(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteAccount", idParameter);
+        }
+    
+        public virtual int SetLoginDateTime(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SetLoginDateTime", idParameter);
+        }
+    
+        public virtual int SetLogOutDateTime(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SetLogOutDateTime", idParameter);
         }
     }
 }

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Хранилище Model" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Хранилище Model" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AccountLogins">
           <Key>
             <PropertyRef Name="Id" />
@@ -118,6 +118,22 @@
           <Property Name="GroupFullName" Type="nchar" MaxLength="200" />
           <Property Name="Id" Type="int" Nullable="false" />
         </EntityType>
+        <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "libraryBook1.1.dbo.vTeachers" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
+        <EntityType Name="vTeachers">
+          <Key>
+            <PropertyRef Name="LastName" />
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Comment" Type="nvarchar" MaxLength="200" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="100" />
+          <Property Name="SecondName" Type="nvarchar" MaxLength="100" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Id" Type="int" Nullable="false" />
+        </EntityType>
+        <Function Name="DeleteAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
         <Function Name="EditUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="id" Type="int" Mode="In" />
           <Parameter Name="Firstname" Type="nvarchar" Mode="In" />
@@ -126,6 +142,12 @@
           <Parameter Name="Login" Type="nvarchar" Mode="In" />
           <Parameter Name="Email" Type="nvarchar" Mode="In" />
           <Parameter Name="Phone" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SetLoginDateTime" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="SetLogOutDateTime" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="Хранилище ModelContainer">
           <EntitySet Name="AccountLogins" EntityType="Self.AccountLogins" Schema="dbo" store:Type="Tables" />
@@ -159,9 +181,17 @@
     [vStudents].[Id] AS [Id]
     FROM [dbo].[vStudents] AS [vStudents]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="vTeachers" EntityType="Self.vTeachers" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vTeachers].[Comment] AS [Comment], 
+    [vTeachers].[FirstName] AS [FirstName], 
+    [vTeachers].[SecondName] AS [SecondName], 
+    [vTeachers].[LastName] AS [LastName], 
+    [vTeachers].[Id] AS [Id]
+    FROM [dbo].[vTeachers] AS [vTeachers]</DefiningQuery>
+          </EntitySet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -294,7 +324,28 @@
             <Parameter Name="Email" Mode="In" Type="String" />
             <Parameter Name="Phone" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="DeleteAccount">
+          <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="SetLoginDateTime">
+          <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="SetLogOutDateTime">
+          <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="vTeachers" EntityType="Model.vTeacher" />
         </EntityContainer>
+        <EntityType Name="vTeacher">
+          <Key>
+            <PropertyRef Name="LastName" />
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Comment" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="SecondName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Type="Int32" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -418,6 +469,20 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="EditUser" FunctionName="Хранилище Model.EditUser" />
+          <FunctionImportMapping FunctionImportName="DeleteAccount" FunctionName="Хранилище Model.DeleteAccount" />
+          <FunctionImportMapping FunctionImportName="SetLoginDateTime" FunctionName="Хранилище Model.SetLoginDateTime" />
+          <FunctionImportMapping FunctionImportName="SetLogOutDateTime" FunctionName="Хранилище Model.SetLogOutDateTime" />
+          <EntitySetMapping Name="vTeachers">
+            <EntityTypeMapping TypeName="Model.vTeacher">
+              <MappingFragment StoreEntitySet="vTeachers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="SecondName" ColumnName="SecondName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

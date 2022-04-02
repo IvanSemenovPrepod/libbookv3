@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="baseService.cs" />
     <Compile Include="Book.cs" />
     <Compile Include="LendingBook.cs" />
     <Compile Include="Student.cs" />
@@ -134,6 +135,10 @@
     <ProjectReference Include="..\datamodel\datamodel.csproj">
       <Project>{d1f0ec08-54e3-42d2-88c9-1ba8a28157d3}</Project>
       <Name>datamodel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Extentions\Extentions.csproj">
+      <Project>{1e275c38-a021-4fbd-9e5b-f11bbc1c0412}</Project>
+      <Name>Extentions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

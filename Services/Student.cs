@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Extentions;
 
 namespace Services
 {
-    public class Student
+    public class Student:baseService
     {
         datamodel.Entities db = new datamodel.Entities();
 
-        //public  ActionResult test() { }
         /// <summary>
         /// Возвращает список студетов для поиска
         /// </summary>
@@ -18,11 +18,28 @@ namespace Services
         /// <returns></returns>
         public List<datamodel.vStudent> GetStudent(string term)
         {
+            if (term.IsNullOrEmptyOrWhitespace())
+            {
+                return null;
+            }
 
-            var t = db.vStudents.Where(p => p.FirstName.StartsWith(term)).ToList();
-            if (t == null)
-                throw new ArgumentNullException();
-           return t;
+            var parts = term.Split(new char[] { ' ', '.' },
+                             StringSplitOptions.RemoveEmptyEntries);
+
+            var students = db.vStudents.AsEnumerable();
+
+            foreach (var part in parts)
+            {
+                students = students.Where(
+                    p => p.FirstName.Contains(part) ||
+                    p.LastName.Contains(part) ||
+                    p.SecondName.Contains(part) ||
+                    p.GroupFullName.Contains(part) ||
+                    p.GroupLittleName.Contains(part)
+                    );
+            }
+
+            return students.ToList();
         }
 
         /// <summary>

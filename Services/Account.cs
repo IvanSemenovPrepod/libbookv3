@@ -19,9 +19,17 @@ namespace Services
             return account;
         }
 
-        public datamodel.vAccount GetAccountByLogin(string login)
+        public IEnumerable<datamodel.vAccount> GetAllAccounts()
         {
-            var account = db.vAccounts.FirstOrDefault(p => p.Login == login);
+            //var m_books = db.Books;
+            //формировать строку из автора книги + название + год
+            //db.Books.Load(); vBooks
+            return db.vAccounts;
+        }
+
+        public datamodel.Account GetAccountByLogin(string login)
+        {
+            var account = db.Accounts.FirstOrDefault(p => p.Login == login);
             return account;
         }
 
@@ -29,6 +37,30 @@ namespace Services
         {
             var account = db.vAccounts.FirstOrDefault(p => p.Id == id);
             return account;
+        }
+
+        public int SetLoginDateTime(int userId)
+        {
+            int ret = db.SetLoginDateTime(userId);
+            return ret;
+        }
+
+        public int SetLogoutDateTime(int userId)
+        {
+            int ret = db.SetLogOutDateTime(userId);
+            return ret;
+        }
+
+        public int Delete(int id)
+        {
+            var account = db.vAccounts.FirstOrDefault(p => p.Id == id);
+            var admins = db.vAccounts.Where(p => p.IsAdmin == true);
+            //проверим что не удаляем последнего админа
+            if (admins.Count() == 1 && admins.FirstOrDefault().Id == id)
+                return 1;
+            //удалим
+            var res = db.DeleteAccount(id);
+            return 0;
         }
 
         public bool EditUser(vAccount account)

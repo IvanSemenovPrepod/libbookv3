@@ -1,17 +1,54 @@
-﻿
+﻿@using datamodel
+@model IEnumerable<Book>
 @{
-    Layout = null;
+    ViewBag.Title = "Index";
 }
 
-<!DOCTYPE html>
+<a href="Book/Add" class="btn btn-primary stretched-link">Добавить книгу</a>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <div> 
-    </div>
-</body>
-</html>
+<table class="table table-hover" id="bookTable">
+    <thead>
+        <tr>
+            <th scope="col">№</th>
+            <th scope="col">Автор</th>
+            <th scope="col">Название</th>
+            <th scope="col">Год выпуска</th>
+            <th scope="col">Количество в наличии</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 1;
+            foreach (var book in Model)
+            {
+                <tr id="@book.Id">
+                    <td>@i</td>
+                    <td>@book.BookName</td>
+                    <td>
+                        @Html.ActionLink("Удалить", "Delete",
+                                new { id = book.Id }, new { @id = "myLink" })
+                    </td>
+                    <td><a href="Book/Edit/@book.Id">Редактировать</a></td>
+                </tr>
+                i++;
+            }
+        }
+
+    </tbody>
+</table>
+<div id="modDialog" class="modal fade">
+    <div id="dialogContent" class="modal-dialog"></div>
+</div>
+<script type="text/javascript">
+    $("#myLink").click(function (e) {
+        console.log(e);
+        e.preventDefault();
+        $.get(this.href, function (data) {
+            $('#dialogContent').html(data);
+            $('#modDialog').modal('show');
+        });
+    });
+   // $('#myModal').modal('show');
+</script>
+
+

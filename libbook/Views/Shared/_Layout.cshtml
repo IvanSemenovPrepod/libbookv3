@@ -38,5 +38,32 @@
     </div>
 
     @RenderSection("scripts", required: false)
+   
 </body>
 </html>
+
+<script type="text/javascript">
+
+    function onWindowClosing() {
+        if (window.event.clientX < 0 || window.event.clientY < 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Account/Logout"
+            });
+        }
+    };
+
+    function onKeydown(evt) {
+        if (evt != undefined && evt.altKey && evt.keyCode == 115) //Alt + F4
+        {
+            $.ajax({
+                type: "POST",
+                url: "/Account/Logout"
+            });
+        }
+    };
+
+    window.onbeforeunload = onWindowClosing;
+    window.document.onkeydown = onKeydown;
+
+</script>

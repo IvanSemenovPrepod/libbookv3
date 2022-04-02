@@ -32,6 +32,8 @@ namespace libbook.Controllers
             else
             {
                 FormsAuthentication.SetAuthCookie(account.Login, true);
+                //логируем время
+                m_account.SetLoginDateTime(user.Id);
                 return RedirectToAction("Index", "LendingBook");
             }
             return View(account);
@@ -39,7 +41,10 @@ namespace libbook.Controllers
 
         public ActionResult Index()
         {
-            var account = m_account.GetAccountByLogin(User.Identity.Name);
+            var user = m_account.GetAccountByLogin(User.Identity.Name);
+            datamodel.Entities db = new datamodel.Entities();
+
+            var account = db.vAccounts.FirstOrDefault(p => p.Id == user.User_id);
             return View(account);
         }
 
@@ -49,9 +54,26 @@ namespace libbook.Controllers
             return View(account);
         }
 
+        public ActionResult Delete(int id)
+        {
+            var account = m_account.GetAccountById(id);
+            if (account != null)
+                return PartialView(account);
+            return View(account);
+        }
+
+        public ActionResult DeleteAccount(int id)
+        {
+            //удаление
+            return View();
+        }
+
         public ActionResult Logout()
         {
+            var user = User.Identity.Name;
+            var account = m_account.GetAccountByLogin(user);
             FormsAuthentication.SignOut();
+            m_account.SetLogoutDateTime(account.Id);
             return RedirectToAction("Login", "Account");
         }
 
@@ -62,6 +84,17 @@ namespace libbook.Controllers
             if(result)
                 return RedirectToAction("Index");//всё норм
             return RedirectToAction("Index");//должна быть инфа об ошибке
+        }
+
+        // 
+        public JsonResult GetAllAccounts()
+        {
+            var accounts = new Services.Account().GetAllAccounts();
+            return Json(
+                new
+                {
+                    accounts = accounts
+                }, JsonRequestBehavior.AllowGet);
         }
     }
 }
