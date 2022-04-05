@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using datamodel;
 using Extentions;
 
 namespace Services
@@ -42,6 +43,12 @@ namespace Services
             return students.ToList();
         }
 
+        
+        public IEnumerable<vStudent> GetAllStudent()
+        {
+            return db.vStudents;
+        }
+
         /// <summary>
         /// Получение студента по id
         /// </summary>
@@ -50,6 +57,65 @@ namespace Services
         public datamodel.vStudent GetStudentById(int id)
         {
             return db.vStudents.FirstOrDefault(p => p.Id == id);
+        }
+
+
+        public void EditStudent(vStudent student)
+        {
+            datamodel.Student st = db.Students.Find(student.Id);
+            st.FirstName = student.FirstName;
+            st.SecondName = student.SecondName;
+            st.LastName = student.LastName;
+
+            var groupStudent = db.Groups.FirstOrDefault(p => p.GroupLittleName == student.GroupLittleName);
+            if (groupStudent != null)
+            {
+                st.Group_id = groupStudent.Id;
+            }
+            db.SaveChanges();
+        }
+
+        public int AddStudent(vStudent student)
+        {
+            datamodel.Student st = new datamodel.Student
+            {
+                FirstName = student.FirstName,
+                SecondName = student.SecondName,
+                LastName = student.LastName,
+            };
+
+            var groupStudent = db.Groups.FirstOrDefault(p => p.GroupLittleName == student.GroupLittleName);
+            if (groupStudent != null)
+            {
+                st.Group_id = groupStudent.Id;
+            }
+            else
+            {
+                Group group = new Group
+                {
+                    GroupLittleName = student.GroupLittleName,
+                    GroupFullName = student.GroupFullName
+                };
+
+                db.Groups.Add(group);
+            }
+
+            db.Students.Add(st);
+            db.SaveChanges();
+
+            return st.Id;
+        }
+
+        public void DeleteStudent(int id)
+        {
+            var student = db.Students.Find(id);
+            if (student != null)
+            {
+                db.Students.Remove(student);
+                //Если удален последний студент из группы, то удалить группу
+
+                db.SaveChanges();
+            }
         }
     }
 }

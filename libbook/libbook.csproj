@@ -251,7 +251,7 @@
     <Content Include="Views\Book\Add.cshtml" />
     <Content Include="Views\Book\Edit.cshtml" />
     <Content Include="Views\Student\Add.cshtml" />
-    <Content Include="Views\Student\DeleteModal.cshtml" />
+    <Content Include="Views\Student\Delete.cshtml" />
     <Content Include="Views\Student\Details.cshtml" />
     <Content Include="Views\Student\Edit.cshtml" />
     <Content Include="Views\Account\Add.cshtml" />
@@ -259,11 +259,12 @@
     <Content Include="Views\Account\Details.cshtml" />
     <Content Include="Views\Account\Edit.cshtml" />
     <Content Include="Views\Teacher\Add.cshtml" />
-    <Content Include="Views\Teacher\DeleteModal.cshtml" />
+    <Content Include="Views\Teacher\Delete.cshtml" />
     <Content Include="Views\Teacher\Details.cshtml" />
     <Content Include="Views\Teacher\Edit.cshtml" />
     <Content Include="Views\Teacher\Index.cshtml" />
     <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Teacher\LoadList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -3,11 +3,55 @@
 @{
     ViewBag.Title = "Index";
 }
-
+<script language="javascript" type="text/javascript">
+    window.onbeforeunload = function () {
+            // This function does nothing.  It won't spawn a confirmation dialog
+            // But it will ensure that the page is not cached by the browser.
+    }
+</script>
 <div class="form-group">
     <label for="fioTeacher">ФИО Преподавателя</label>
     <input type="text" class="form-control" id="fioTeacher" aria-describedby="fioTeacherHelp" placeholder="Введите фио преподавателя">
     <small id="fioTeacherHelp" class="form-text text-muted">Начните вводить фамилию Преподавателя. Через пробел можно указать Имя и Отчество</small>
+</div>
+
+<div>
+    <a href="Add" id="addLink" class="btn btn-primary stretched-link">Добавить</a>
+    @*<a href="LoadList" id="addListLink" class="btn btn-primary stretched-link">Загрузить</a>*@
+
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    Загрузить
+</button>
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+            @using (Html.BeginForm("Upload", "Teacher", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="form-group">
+                    <label for="exampleFormControlFile1">Выберите файл со списком преподавателей</label>
+                    <label>Файл должен содержать фамилию, имя, отчество и комментарий, разделенными ;</label>
+                    
+                </div>
+                <input type="file" name="file" accept=".csv,.txt,.xls,.xlsx" />
+                <input type="submit" class="btn btn-primary" value="Загрузить" />
+            }
+        </div>
+    </div>
+</div>
+
+<div id="addDialog" class="modal fade">
+    <div id="dialogContentAdd" class="modal-dialog"></div>
+</div>
+
+<div id="deleteDialog" class="modal fade">
+    <div id="dialogContentDelete" class="modal-dialog"></div>
+</div>
+
+<div id="EditDialog" class="modal fade">
+    <div id="dialogContentEdit" class="modal-dialog"></div>
+</div>
+
+<div id="loadListDialog" class="modal fade">
+    <div id="dialogContentLoad" class="modal-dialog"></div>
 </div>
 
 <table class="table table-hover" id="teacherTable">
@@ -32,10 +76,11 @@
                     <td>@teacher.LastName</td>
                     <td>@teacher.Comment</td>
                     <td>
-                        @Html.ActionLink("Удалить", "Delete",
-                                new { id = teacher.Id }, new { @id = "myLink" })
+                        <button type="button" onclick='ShowDelete(@teacher.Id)' class="btn btn-link">Удалить</button>
                     </td>
-                    <td><a href="Teacher/Edit/@teacher.Id">Редактировать</a></td>
+                    <td>
+                        <button type="button" onclick='ShowEdit(@teacher.Id)' class="btn btn-link">Редактировать</button>
+                    </td>
                 </tr>
                 i++;
             }
@@ -46,8 +91,37 @@
 
 
 <script type="text/javascript">
+    function ShowDelete(teacherId) {
+        $('#teacherTable tr').removeClass('active');
+        $.get("Delete/"+teacherId, function (data) {
+            $('#dialogContentDelete').html(data);
+            $('#deleteDialog').modal('show');
+        });
+    }
+
+    function ShowEdit(teacherId) {
+        $.get("Edit/" + teacherId, function (data) {
+            $('#dialogContentEdit').html(data);
+            $('#EditDialog').modal('show');
+        });
+    }
 
     $(document).ready(function () {
+        $("#addLink").click(function (e) {
+            e.preventDefault();
+            $.get(this.href, function (data) {
+                $('#dialogContentAdd').html(data);
+                $('#addDialog').modal('show');
+            });
+        });
+
+        $("#addListLink").click(function (e) {
+            e.preventDefault();
+            $.get(this.href, function (data) {
+                $('#dialogContentLoad').html(data);
+                $('#loadListDialog').modal('show');
+            });
+        });
         //выбор из таблицы преподавателй
         $('#teacherTable').on('click', 'tbody tr', function (event) {
             console.log($(this).attr('id'));
@@ -101,6 +175,8 @@
                 $('#teacherTable > tbody > tr:last').click();
             }
         }
+
+
     });
 
 </script>
