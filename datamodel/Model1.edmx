@@ -58,6 +58,13 @@
           <Property Name="GroupFullName" Type="nvarchar" MaxLength="200" />
           <Property Name="GroupLittleName" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="Makers">
+          <Key>
+            <PropertyRef Name="Id_maker" />
+          </Key>
+          <Property Name="Id_maker" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MakerName" Type="varchar" MaxLength="100" />
+        </EntityType>
         <EntityType Name="Students">
           <Key>
             <PropertyRef Name="Id" />
@@ -119,21 +126,42 @@
           <Property Name="Id" Type="int" Nullable="false" />
         </EntityType>
         <!--Ошибки, обнаруженные при создании:
-предупреждение 6002: В таблице или представлении "libraryBook1.1.dbo.vTeachers" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
-        <EntityType Name="vTeachers">
+предупреждение 6002: В таблице или представлении "libraryBook1.1.dbo.vTeacher" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
+        <EntityType Name="vTeacher">
           <Key>
-            <PropertyRef Name="LastName" />
             <PropertyRef Name="Id" />
+            <PropertyRef Name="LastName" />
           </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="Comment" Type="nvarchar" MaxLength="200" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="100" />
           <Property Name="SecondName" Type="nvarchar" MaxLength="100" />
           <Property Name="LastName" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Id" Type="int" Nullable="false" />
         </EntityType>
-        <Function Name="DeleteAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Id" Type="int" Mode="In" />
-        </Function>
+        <Association Name="FK_Books_Authors">
+          <End Role="Authors" Type="Self.Authors" Multiplicity="0..1" />
+          <End Role="Books" Type="Self.Books" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Authors">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Books">
+              <PropertyRef Name="Author_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Books_Makers">
+          <End Role="Makers" Type="Self.Makers" Multiplicity="0..1" />
+          <End Role="Books" Type="Self.Books" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Makers">
+              <PropertyRef Name="Id_maker" />
+            </Principal>
+            <Dependent Role="Books">
+              <PropertyRef Name="Maker_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="EditUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="id" Type="int" Mode="In" />
           <Parameter Name="Firstname" Type="nvarchar" Mode="In" />
@@ -143,18 +171,13 @@
           <Parameter Name="Email" Type="nvarchar" Mode="In" />
           <Parameter Name="Phone" Type="nvarchar" Mode="In" />
         </Function>
-        <Function Name="SetLoginDateTime" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Id" Type="int" Mode="In" />
-        </Function>
-        <Function Name="SetLogOutDateTime" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Id" Type="int" Mode="In" />
-        </Function>
         <EntityContainer Name="Хранилище ModelContainer">
           <EntitySet Name="AccountLogins" EntityType="Self.AccountLogins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Accounts" EntityType="Self.Accounts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Authors" EntityType="Self.Authors" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Books" EntityType="Self.Books" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Groups" EntityType="Self.Groups" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Makers" EntityType="Self.Makers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Students" EntityType="Self.Students" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Teachers" EntityType="Self.Teachers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
@@ -181,15 +204,23 @@
     [vStudents].[Id] AS [Id]
     FROM [dbo].[vStudents] AS [vStudents]</DefiningQuery>
           </EntitySet>
-          <EntitySet Name="vTeachers" EntityType="Self.vTeachers" store:Type="Views" store:Schema="dbo">
+          <EntitySet Name="vTeacher" EntityType="Self.vTeacher" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
-    [vTeachers].[Comment] AS [Comment], 
-    [vTeachers].[FirstName] AS [FirstName], 
-    [vTeachers].[SecondName] AS [SecondName], 
-    [vTeachers].[LastName] AS [LastName], 
-    [vTeachers].[Id] AS [Id]
-    FROM [dbo].[vTeachers] AS [vTeachers]</DefiningQuery>
+    [vTeacher].[Id] AS [Id], 
+    [vTeacher].[Comment] AS [Comment], 
+    [vTeacher].[FirstName] AS [FirstName], 
+    [vTeacher].[SecondName] AS [SecondName], 
+    [vTeacher].[LastName] AS [LastName]
+    FROM [dbo].[vTeacher] AS [vTeacher]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_Books_Authors" Association="Self.FK_Books_Authors">
+            <End Role="Authors" EntitySet="Authors" />
+            <End Role="Books" EntitySet="Books" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Books_Makers" Association="Self.FK_Books_Makers">
+            <End Role="Makers" EntitySet="Makers" />
+            <End Role="Books" EntitySet="Books" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -226,6 +257,7 @@
           <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="SecondName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="LastName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Books" Relationship="Model.FK_Books_Authors" FromRole="Author" ToRole="Book" />
         </EntityType>
         <EntityType Name="Book">
           <Key>
@@ -239,6 +271,8 @@
           <Property Name="Count" Type="Int32" />
           <Property Name="Comment" Type="String" MaxLength="700" FixedLength="false" Unicode="true" />
           <Property Name="Category_id" Type="Int32" />
+          <NavigationProperty Name="Author" Relationship="Model.FK_Books_Authors" FromRole="Book" ToRole="Author" />
+          <NavigationProperty Name="Maker" Relationship="Model.FK_Books_Makers" FromRole="Book" ToRole="Maker" />
         </EntityType>
         <EntityType Name="Group">
           <Key>
@@ -333,18 +367,59 @@
           <FunctionImport Name="SetLogOutDateTime">
           <Parameter Name="Id" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="Makers" EntityType="Model.Maker" />
+          <AssociationSet Name="FK_Books_Authors" Association="Model.FK_Books_Authors">
+            <End Role="Author" EntitySet="Authors" />
+            <End Role="Book" EntitySet="Books" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Books_Makers" Association="Model.FK_Books_Makers">
+            <End Role="Maker" EntitySet="Makers" />
+            <End Role="Book" EntitySet="Books" />
+          </AssociationSet>
           <EntitySet Name="vTeachers" EntityType="Model.vTeacher" />
         </EntityContainer>
+        <EntityType Name="Maker">
+          <Key>
+            <PropertyRef Name="Id_maker" />
+          </Key>
+          <Property Name="Id_maker" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MakerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Books" Relationship="Model.FK_Books_Makers" FromRole="Maker" ToRole="Book" />
+        </EntityType>
+        <Association Name="FK_Books_Authors">
+          <End Type="Model.Author" Role="Author" Multiplicity="0..1" />
+          <End Type="Model.Book" Role="Book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Book">
+              <PropertyRef Name="Author_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Books_Makers">
+          <End Type="Model.Maker" Role="Maker" Multiplicity="0..1" />
+          <End Type="Model.Book" Role="Book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Maker">
+              <PropertyRef Name="Id_maker" />
+            </Principal>
+            <Dependent Role="Book">
+              <PropertyRef Name="Maker_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="vTeacher">
           <Key>
-            <PropertyRef Name="LastName" />
             <PropertyRef Name="Id" />
+            <PropertyRef Name="LastName" />
           </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Comment" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="SecondName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Id" Type="Int32" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -469,17 +544,22 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="EditUser" FunctionName="Хранилище Model.EditUser" />
-          <FunctionImportMapping FunctionImportName="DeleteAccount" FunctionName="Хранилище Model.DeleteAccount" />
-          <FunctionImportMapping FunctionImportName="SetLoginDateTime" FunctionName="Хранилище Model.SetLoginDateTime" />
-          <FunctionImportMapping FunctionImportName="SetLogOutDateTime" FunctionName="Хранилище Model.SetLogOutDateTime" />
+          <EntitySetMapping Name="Makers">
+            <EntityTypeMapping TypeName="Model.Maker">
+              <MappingFragment StoreEntitySet="Makers">
+                <ScalarProperty Name="MakerName" ColumnName="MakerName" />
+                <ScalarProperty Name="Id_maker" ColumnName="Id_maker" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="vTeachers">
             <EntityTypeMapping TypeName="Model.vTeacher">
-              <MappingFragment StoreEntitySet="vTeachers">
-                <ScalarProperty Name="Id" ColumnName="Id" />
+              <MappingFragment StoreEntitySet="vTeacher">
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="SecondName" ColumnName="SecondName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

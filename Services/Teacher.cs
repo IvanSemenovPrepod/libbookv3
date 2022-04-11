@@ -10,7 +10,7 @@ namespace Services
 {
     public class Teacher
     {
-        Entities db = new Entities();
+        Entities2 db = new Entities2();
 
         /// <summary>
         /// Возвращает список преподавателей для поиска
