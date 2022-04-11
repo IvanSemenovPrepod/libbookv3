@@ -10,7 +10,7 @@ namespace Services
 {
     public class Student:baseService
     {
-        datamodel.Entities db = new datamodel.Entities();
+        datamodel.Entities2 db = new datamodel.Entities2();
 
         /// <summary>
         /// Возвращает список студетов для поиска

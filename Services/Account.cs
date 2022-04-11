@@ -11,7 +11,7 @@ namespace Services
 {
     public class Account
     {
-        Entities db = new Entities();
+        Entities2 db = new Entities2();
         public datamodel.Account GetAccountByLoginPassword(string login, string password)
         {
             var account = db.Accounts.FirstOrDefault(p => p.Login == login && p.Password == password);

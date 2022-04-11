@@ -15,30 +15,27 @@ namespace datamodel
 using System;
     using System.Collections.Generic;
     
-public partial class Book
+public partial class Maker
 {
 
-    public int Id { get; set; }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+    public Maker()
+    {
 
-    public Nullable<int> Author_id { get; set; }
+        this.Books = new HashSet<Book>();
 
-    public Nullable<int> Maker_id { get; set; }
+    }
 
-    public string BookName { get; set; }
 
-    public Nullable<System.DateTime> Year { get; set; }
+    public int Id_maker { get; set; }
 
-    public Nullable<int> Count { get; set; }
-
-    public string Comment { get; set; }
-
-    public Nullable<int> Category_id { get; set; }
+    public string MakerName { get; set; }
 
 
 
-    public virtual Author Author { get; set; }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
-    public virtual Maker Maker { get; set; }
+    public virtual ICollection<Book> Books { get; set; }
 
 }
 

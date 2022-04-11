@@ -42,7 +42,7 @@ namespace libbook.Controllers
         public ActionResult Index()
         {
             var user = m_account.GetAccountByLogin(User.Identity.Name);
-            datamodel.Entities db = new datamodel.Entities();
+            datamodel.Entities2 db = new datamodel.Entities2();
 
             var account = db.vAccounts.FirstOrDefault(p => p.Id == user.User_id);
             return View(account);
